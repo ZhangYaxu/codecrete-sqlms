@@ -22,8 +22,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  *
  */
-@RunWith(SpringRunner.class)
 @DataJpaTest
+@RunWith(SpringRunner.class)
 @AutoConfigureTestDatabase(replace=Replace.NONE)
 @ContextConfiguration(classes={
         IntegrationTestConfiguration.class,
@@ -45,6 +45,7 @@ public class UserRepositoryTest {
     @Before
     public void setup() {}
 
+    // FIX: database out of sync, awaiting codecrete-domain refresh
     @Test
     public void testGetByEmail() {
 

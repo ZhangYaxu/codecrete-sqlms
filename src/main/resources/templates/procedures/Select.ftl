@@ -5,7 +5,7 @@ DELIMITER $$
 #
 # DROP PROCEDURE IF EXISTS select${table};
 
-CREATE DEFINER = '${user}'@'${host}' PROCEDURE select${table} (
+CREATE DEFINER = '${definer}'@'${host}' PROCEDURE select${table} (
 
   # Define procedure parameters
   [#list fields?keys as field]

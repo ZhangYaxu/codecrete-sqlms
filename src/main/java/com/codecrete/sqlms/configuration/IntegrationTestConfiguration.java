@@ -25,4 +25,5 @@ import org.springframework.context.annotation.Import;
 public class IntegrationTestConfiguration {
     
     private static final Logger LOG = LogManager.getLogger(IntegrationTestConfiguration.class);
+    
 }

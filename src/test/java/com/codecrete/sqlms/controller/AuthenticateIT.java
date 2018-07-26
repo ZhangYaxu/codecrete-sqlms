@@ -17,8 +17,8 @@ import static org.springframework.security.test.web.servlet.response.SecurityMoc
 /**
  *
  */
-@RunWith(SpringRunner.class)
 @WebMvcTest
+@RunWith(SpringRunner.class)
 @ContextConfiguration(classes=IntegrationTestConfiguration.class)
 public class AuthenticateIT {
     
@@ -27,6 +27,7 @@ public class AuthenticateIT {
     @Autowired
     private MockMvc mvc;
 
+    // FIX: (AuthenticationCredentialsNotFoundException) Database out of sync
     @Test
     public void testAuthenticate() throws Exception {
 

@@ -35,8 +35,14 @@ public class BoilerplateService {
     
     @Autowired
     private ApplicationContext context;
+
+    @Autowired
+    private String definer;
     
-    // Configure?
+    @Autowired
+    private String host;
+    
+    // TODO: Configure?
     public BoilerplateService() {}
     
     @PreAuthorize("hasRole('ROLE_MULE')")
@@ -51,50 +57,40 @@ public class BoilerplateService {
 //    variables.put("HASHCODE", hashcode.stream().collect(Collectors.joining(", ")));
 //    variables.put("EQUALS", equals.stream().collect(Collectors.joining(" && ")));
 //
-//    try (StringWriter out = new StringWriter()) {
 //
-//      dtoTemplate.process(variables, out);
-//      out.flush();
-//      string = out.getBuffer().toString();
-//    }
-//
-//    return string;
+//    return getSql(template, variables);
 
         return new String();
     }
     
     @PreAuthorize("hasRole('ROLE_MULE')")
+    public String beforeDeleteTrigger(String className) {
+        return new String();
+    }
+    
+    @PreAuthorize("hasRole('ROLE_MULE')")
+    public String beforeUpdateTrigger(String className) {
+        return new String();
+    }
+    
+    @PreAuthorize("hasRole('ROLE_MULE')")
     public String deleteProcedure(String className) throws IOException, TemplateException, ClassNotFoundException {
-    
-        //
-        Class<?> klass = Class.forName(className);
-    
-        Map<String,Object> variables = new HashMap<>();
         
-        //
-//        variables.put("user", "");
-    
-        //
-//        variables.put("host", "");
-    
-        //
-//        variables.put("fields", getFields(klass));
-        
-        //
-        variables.put("table", getTable(klass));
-    
-    
-    
         Configuration configuration = new Configuration(new Version("2.3.28"));
         configuration.setDefaultEncoding("UTF-8");
         configuration.setClassForTemplateLoading(String.class, "/templates/procedures/");
         Template template = configuration.getTemplate("Delete.ftl");
+    
+        Map<String,Object> variables = new HashMap<>();
+        variables.put("definer", getDefiner());
+        variables.put("host", getHost());
+        variables.put("table", getTable(Class.forName(className)));
         
         return getSql(template, variables);
     }
     
     //
-    private List<String> getFields(Class klass) {
+    private List<String> getColumns(Class klass) {
     
         List<String> fields = new ArrayList<>();
         
@@ -117,7 +113,25 @@ public class BoilerplateService {
         return fields;
     }
     
-    //
+    /**
+     * Getter method for definer variable.
+     *
+     * @return the definer object
+     */
+    public String getDefiner() {
+        return this.definer;
+    }
+    
+    /**
+     * Getter method for host variable.
+     *
+     * @return the host object
+     */
+    public String getHost() {
+        return this.host;
+    }
+    
+    // TODO: Rename: getString?
     private String getSql(Template template, Map<String,Object> variables) throws IOException, TemplateException {
         
         String sql = new String();
@@ -137,11 +151,40 @@ public class BoilerplateService {
     
         String name = null;
         
-        if (klass.isAnnotationPresent(klass)) {
+        if (klass.isAnnotationPresent(Table.class)) {
             Table table = (Table) klass.getAnnotation(Table.class);
             name = table.name();
         }
         
         return name;
+    }
+    
+    @PreAuthorize("hasRole('ROLE_MULE')")
+    public String insertProcedure(String className) {
+        return new String();
+    }
+    
+    @PreAuthorize("hasRole('ROLE_MULE')")
+    public String selectProcedure(String className) throws IOException, ClassNotFoundException, TemplateException {
+    
+        Configuration configuration = new Configuration(new Version("2.3.28"));
+        configuration.setDefaultEncoding("UTF-8");
+        configuration.setClassForTemplateLoading(String.class, "/templates/procedures/");
+        Template template = configuration.getTemplate("Select.ftl");
+    
+        Map<String,Object> variables = new HashMap<>();
+        variables.put("definer", getDefiner());
+        variables.put("host", getHost());
+    
+        Class klass = Class.forName(className);
+        variables.put("table", getTable(klass));
+        variables.put("fields", getColumns(klass));
+    
+        return getSql(template, variables);
+    }
+    
+    @PreAuthorize("hasRole('ROLE_MULE')")
+    public String updateProcedure(String className) {
+        return new String();
     }
 }

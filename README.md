@@ -1,4 +1,4 @@
-codecrete-sqlms 0.0.1
+codecrete-sqlms 0.0.2
 ========================================
 1. [Introduction](#introduction)
 1. [Installation](#installation)
@@ -11,8 +11,45 @@ codecrete-sqlms 0.0.1
 1. [Acknowledgments](#acknowledgments)
 1. [License](#license)
 
+
 Introduction
 ------------
+Structured Query Language source Management Suite
+
+---
+
+**Build Service**: Search the specified source path for the configured root 
+source directory. Then recursively search to the specified directory depth for 
+all sql scripts with the configured file extension. Future versions will then
+interpret all sql scripts for syntax errors and execute them to the specified
+schema.
+
+---
+
+**Boilerplate Service**: Use freemarker templates to generate database table,
+stored procedure, function and trigger creation scripts. The generated code is 
+designed to work in conjunction with the codecrete-orm framework including adding
+audit tables and limiting all access to the database to an api of stored routines
+for security and speed.
+
+---
+
+**Dashboard Service**: 
+
+---
+
+**Drop Service**: Perform a hard schema drop.
+
+---
+
+**Export Service**: Given a standing sql database, reverse engineer it into a set
+of sqlms default directories; patches, records, routines, grants, schemas, users,
+tables and triggers, optionally ignoring data records.
+
+---
+
+**Rollback Service**: Attempt to undo the last build by reading the Build Report
+and systematically deleting all tables, routines, triggers and even records listed.
 
 
 Installation
@@ -32,7 +69,7 @@ Finally add the dependency to your projects pom.
         <dependency>
             <groupId>com.codecrete</groupId>
             <artifactId>codecrete-sqlms</artifactId>
-            <version>0.0.1</version>
+            <version>0.0.2</version>
         </dependency>
         ...
     </dependencies>
@@ -42,6 +79,7 @@ Finally add the dependency to your projects pom.
 
 Usage
 -----
+...
 
 
 Configuration
@@ -341,6 +379,7 @@ See [JavaDocs](https://morrisde.github.io/codecrete-sqlms/)
 
 Authors
 -------
++ [Eliot Morris](https://www.linkedin.com/in/derek-eliot-morris/ "LinkedIn")
 
 
 Acknowledgments
@@ -354,3 +393,4 @@ Acknowledgments
 
 License
 -------
++ [MIT](https://en.wikipedia.org/wiki/MIT_License "MIT License")

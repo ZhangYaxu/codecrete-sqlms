@@ -1,8 +1,11 @@
 Project
 -------
-+ Fill in project version and timestamp below
++ Finish entity annotations
 
 Versions
 --------
-**project.version - year.month.day**
+**0.0.2 - 2018.07.26**
++ Milestone commit
+
+**0.0.1 - 2018.07.23**
 + Initial version

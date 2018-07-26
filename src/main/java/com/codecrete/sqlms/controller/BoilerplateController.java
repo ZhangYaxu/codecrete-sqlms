@@ -25,25 +25,28 @@ public class BoilerplateController {
      */
     private static final Logger LOG = LogManager.getLogger(BoilerplateController.class);
     
+    //
     @Autowired
     private BoilerplateService boilerplateService;
-    
-    @RequestMapping(path="procedures/delete", method=RequestMethod.POST, consumes="application/json", produces="application/json")
-    public ResponseEntity<String> deleteProcedure(@RequestBody DeleteInstruction instruction) throws Exception {
-    
-        String table = instruction.getTable();
-        
-        String json = this.boilerplateService.deleteProcedure(table);
-        
-        return new ResponseEntity<>(json, HttpStatus.OK);
-    }
-    
-    @RequestMapping(path="triggers/after/insert", method=RequestMethod.POST, consumes="application/json", produces="application/json")
+   
+    //
+    @RequestMapping(path="trigger/after/insert", method=RequestMethod.POST, consumes="application/json", produces="application/json")
     public ResponseEntity<String> afterInsertTrigger(@RequestBody AfterInsertInstruction instruction) {
         
         String table = instruction.getTable();
         
         String json = this.boilerplateService.afterInsertTrigger(table);
+        
+        return new ResponseEntity<>(json, HttpStatus.OK);
+    }
+    
+    //
+    @RequestMapping(path="procedure/delete", method=RequestMethod.POST, consumes="application/json", produces="application/json")
+    public ResponseEntity<String> deleteProcedure(@RequestBody DeleteInstruction instruction) throws Exception {
+    
+        String table = instruction.getTable();
+        
+        String json = this.boilerplateService.deleteProcedure(table);
         
         return new ResponseEntity<>(json, HttpStatus.OK);
     }

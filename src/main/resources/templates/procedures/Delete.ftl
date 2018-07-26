@@ -5,7 +5,7 @@ DELIMITER $$
 #
 # DROP PROCEDURE IF EXISTS delete${table};
 
-CREATE DEFINER = '${user}'@'${host}' PROCEDURE delete${table} (
+CREATE DEFINER = '${definer}'@'${host}' PROCEDURE delete${table} (
   IN id INTEGER
 )
   SQL SECURITY DEFINER

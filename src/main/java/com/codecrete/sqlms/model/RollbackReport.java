@@ -6,12 +6,10 @@ import org.apache.logging.log4j.Logger;
 /**
  * @author Eliot Morris
  */
-public class Dashboard {
+public class RollbackReport {
     
     /**
      * Log4j logger.
      */
-    private static final Logger LOG = LogManager.getLogger(Dashboard.class);
-    
-    
+    private static final Logger LOG = LogManager.getLogger(RollbackReport.class);
 }

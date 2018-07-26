@@ -1,7 +1,7 @@
 package com.codecrete.sqlms.controller;
 
 import com.codecrete.domain.model.User;
-import com.codecrete.sqlms.model.Dashboard;
+import com.codecrete.sqlms.model.DashboardReport;
 import com.codecrete.sqlms.model.DashboardInstruction;
 import com.codecrete.sqlms.service.DashboardService;
 import org.apache.logging.log4j.LogManager;
@@ -27,12 +27,12 @@ public class DashboardController {
     private DashboardService dashboardService;
 
     @RequestMapping(method=RequestMethod.POST, consumes="application/json", produces="application/json")
-    public ResponseEntity<Dashboard> dashboard(@RequestBody DashboardInstruction instruction) {
+    public ResponseEntity<DashboardReport> dashboard(@RequestBody DashboardInstruction instruction) {
 
         User user = instruction.getUser();
         
-        Dashboard dashboard = this.dashboardService.getDashboard(user);
+        DashboardReport dashboardReport = this.dashboardService.getDashboard(user);
 
-        return new ResponseEntity<>(dashboard, HttpStatus.OK);
+        return new ResponseEntity<>(dashboardReport, HttpStatus.OK);
     }
 }
