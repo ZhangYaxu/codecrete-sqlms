@@ -1,0 +1,6 @@
+com.codecrete.sqlms
+com.codecrete.sqlms.configuration
+com.codecrete.sqlms.controller
+com.codecrete.sqlms.model
+com.codecrete.sqlms.repository
+com.codecrete.sqlms.service

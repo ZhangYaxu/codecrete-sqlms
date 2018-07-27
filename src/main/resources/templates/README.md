@@ -21,16 +21,16 @@ Structured Query Language source Management Suite
 **Build Service**: Search the specified source path for the configured root 
 source directory. Then recursively search to the specified directory depth for 
 all sql scripts with the configured file extension. Future versions will then
-interpret all sql scripts for syntax errors and execute them to the specified
+interpret all sql scripts for syntax errors and execute them on the specified
 schema.
 
 ---
 
-**Boilerplate Service**: Use freemarker templates to generate database table,
-stored procedure, function and trigger creation scripts. The generated code is 
-designed to work in conjunction with the codecrete-orm framework including adding
-audit tables and limiting all access to the database to an api of stored routines
-for security and speed.
+**Boilerplate Service**: Use freemarker templates and the properly annotated entity 
+classes to generate database table, stored procedure, function and trigger creation 
+scripts. The generated code is designed to work in conjunction with the codecrete-orm 
+framework including adding audit tables and limiting all access to the database 
+to an api of stored routines for security and speed.
 
 ---
 

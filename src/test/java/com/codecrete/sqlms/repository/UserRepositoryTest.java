@@ -1,7 +1,7 @@
 package com.codecrete.sqlms.repository;
 
-import com.codecrete.sqlms.configuration.IntegrationTestConfiguration;
 import com.codecrete.domain.model.User;
+import com.codecrete.sqlms.configuration.IntegrationTestConfiguration;
 import com.codecrete.sqlms.configuration.MockBeanConfiguration;
 import org.junit.Before;
 import org.junit.Test;

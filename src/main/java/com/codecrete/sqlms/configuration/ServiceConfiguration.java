@@ -132,7 +132,6 @@ public class ServiceConfiguration {
     
     @Bean
     public Integer searchDepth() {
-//        return Integer.valueOf(this.searchDepth);
         return this.searchDepth;
     }
     

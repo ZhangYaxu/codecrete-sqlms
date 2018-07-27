@@ -18,7 +18,7 @@ public class BuildRepository {
      * Log4j logger.
      */
     private static final Logger LOG = LogManager.getLogger(BuildRepository.class);
-    
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
     
@@ -33,19 +33,36 @@ public class BuildRepository {
     public Integer execute(List<String> batch) {
     
         // TODO: Enable / Disable auto commit?
-    
-        // TODO: set foreign key checks=0
-//      jdbcTemplate.getDataSource().getConnection();
-    
-        // TODO: Change connection to created schema
+//      getJdbcTemplate().getDataSource().getConnection().setAutoCommit(?);
         
+        // TODO: Make sure we have a single connection going and so our variable is actually set.
+        // Disable foreign keys
+        getJdbcTemplate().execute("SET FOREIGN_KEY_CHECKS=0");
+//        SqlRowSet set = getJdbcTemplate().queryForRowSet("SHOW VARIABLES LIKE 'FOREIGN_KEY_CHECKS';");
+//        while(set.next()) {
+//            System.out.println("FOREIGN_KEY_CHECKS: "+set.getString("Value"));
+//        }
         
-        int[] foo = this.jdbcTemplate.batchUpdate(batch.stream().toArray(String[]::new));
+        // TODO: Change connection to created schema (must be passed)
+//      this.jdbcTemplate.getDataSource().getConnection().setSchema("?");
+        
+        // TODO: Because we are executing the unified script in batches do we need to prepend "USE domain;" to every script?
+        int[] foo = getJdbcTemplate().batchUpdate(batch.stream().toArray(String[]::new));
     
     
-        // TODO: set foreign key checks=1
+        // Enable foreign keys
+        getJdbcTemplate().execute("SET FOREIGN_KEY_CHECKS=1");
     
         return foo.length;
+    }
+    
+    /**
+     * Getter method for jdbcTemplate variable.
+     *
+     * @return the jdbcTemplate object
+     */
+    public JdbcTemplate getJdbcTemplate() {
+        return this.jdbcTemplate;
     }
     
     

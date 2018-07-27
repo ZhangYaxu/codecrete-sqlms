@@ -75,6 +75,8 @@ public class BuildService {
     @PreAuthorize("hasRole('ROLE_MULE')")
     public BuildReport build(Path source, String domain) throws IOException {
     
+        // TODO: Check if source name ends in .jar and if so unpack?
+        
         BuildReport report = new BuildReport();
     
         List<String> batch = new ArrayList<>();
@@ -85,29 +87,16 @@ public class BuildService {
         // Execute schema scripts
         for (Path script : getSchemaScripts(root)) {
             
-            // Read script into String
-            String sql = toSql(script);
-            
-            // Get schema name from script and add to report
+            String sql = toSql(script, domain);
             report.addSchema(getSchemaName(sql));
-            
-            // Batch sql and only execute one repository call
             batch.add(sql);
         }
-        
-        // FIX: Change to created schema here? or in execute call? via connection object?
-        // FIX: Because we are executing the unified script in batches do we need to prepend "USE domain;" to every script?
-        batch.add(String.format("USE %s;", domain));
         
         // Create schema users
         for (Path script : getUserScripts(root)) {
     
-            // Read script into String
-            String sql = toSql(script);
-    
-            // Get schema name from script and add to report
+            String sql = toSql(script, domain);
             report.addUser(getUserName(sql));
-    
             batch.add(sql);
         }
     
@@ -116,24 +105,16 @@ public class BuildService {
         // Enable foreign key checks
         for (Path script : getTableScripts(root)) {
     
-            // Read script into String
-            String sql = toSql(script);
-    
-            // Get schema name from script and add to report
+            String sql = toSql(script, domain);
             report.addTable(getTableName(sql));
-    
             batch.add(sql);
         }
     
         // Create all stored procedures and functions
         for (Path script : getRoutineScripts(root)) {
             
-            // Read script into String
-            String sql = toSql(script);
-    
-            // Get schema name from script and add to report
+            String sql = toSql(script, domain);
             report.addRoutine(getRoutineName(sql));
-    
             batch.add(sql);
         }
     
@@ -141,36 +122,24 @@ public class BuildService {
         // subdirectory and execute each of them while recording their names
         for (Path script : getTriggerScripts(root)) {
         
-            // Read script into String
-            String sql = toSql(script);
-        
-            // Get schema name from script and add to report
+            String sql = toSql(script, domain);
             report.addTrigger(getTriggerName(sql));
-        
             batch.add(sql);
         }
         
         // Run grant scripts
         for (Path script : getGrantScripts(root)) {
         
-            // Read script into String
-            String sql = toSql(script);
-        
-            // Get schema name from script and add to report
+            String sql = toSql(script, domain);
             report.addGrant(getGrantName(sql));
-        
             batch.add(sql);
         }
         
         // Execute all table record scripts
         for (Path script : getRecordScripts(root)) {
         
-            // Read script into String
-            String sql = toSql(script);
-        
-            // Get schema name from script and add to report
+            String sql = toSql(script, domain);
             report.addRecord(getRecordName(sql));
-        
             batch.add(sql);
         }
         
@@ -178,16 +147,12 @@ public class BuildService {
         // Patch database
         for (Path script : getPatchScripts(root)) {
         
-            // Read script into String
-            String sql = toSql(script);
-        
-            // Get schema name from script and add to report
+            String sql = toSql(script, domain);
             report.addPatch(getPatchName(sql));
-        
             batch.add(sql);
         }
         
-        //
+        // Execute the concatenated script and return the number of statements executed.
         report.setSize(repository.execute(batch));
         
         return report;
@@ -295,12 +260,16 @@ public class BuildService {
     //
     private List<Path> getScripts(Path directory) throws IOException {
         
-        // File must not be empty and be named with the specified suffix
-        BiPredicate<Path,BasicFileAttributes> matcher = (path, attributes) -> {
-            return attributes.size() > 0 && path.getFileName().toString().endsWith(getScriptExtension());
+        // File must not be empty and be named with the configured suffix
+        BiPredicate<Path,BasicFileAttributes> filter = (path, attributes) -> {
+            
+            boolean isScript = path.getFileName().toString().endsWith(getScriptExtension());
+            boolean notEmpty = attributes.size() > 0;
+            
+            return isScript && notEmpty;
         };
         
-        List<Path> paths = Files.find(directory, getSearchDepth(), matcher).collect(toList());
+        List<Path> paths = Files.find(directory, getSearchDepth(), filter).collect(toList());
         LOG.debug("Found: {} scripts under directory: {}", paths.size(), directory);
         
         return paths;
@@ -381,8 +350,14 @@ public class BuildService {
         return getScripts(root.resolve(getUserDirectory()));
     }
     
-    // TODO: Append 'USE domain;' to all scripts?
-    private String toSql(Path script) throws IOException {
-        return new String(Files.readAllBytes(script), StandardCharsets.UTF_8);
+    // Prepend 'USE Schema' to script
+    // Prepend 'SET foreign_key_checks=0'
+    // Append 'SET foreign_key_checks=1'
+    private String toSql(Path script, String domain) throws IOException {
+    
+        String sql = String.format("USE %s;", domain);
+        sql += new String(Files.readAllBytes(script), StandardCharsets.UTF_8);
+        
+        return sql;
     }
 }

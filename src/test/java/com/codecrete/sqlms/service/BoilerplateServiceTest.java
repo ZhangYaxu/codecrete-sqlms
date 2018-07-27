@@ -36,16 +36,17 @@ public class BoilerplateServiceTest {
     public void testDeleteProcedure() throws Exception {
 
         String sql = this.boilerplateService.deleteProcedure("com.codecrete.domain.model.User");
-    
+
         System.out.println(sql);
         
+        // TODO: Write to script file named after the procedure name
     }
     
     @Test
     public void testSelectProcedure() throws Exception {
     
         String sql = this.boilerplateService.deleteProcedure("com.codecrete.domain.model.User");
-    
+
         System.out.println(sql);
     
     }
