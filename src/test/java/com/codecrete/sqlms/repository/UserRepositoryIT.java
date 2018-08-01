@@ -29,9 +29,9 @@ import static org.assertj.core.api.Assertions.assertThat;
         IntegrationTestConfiguration.class,
         MockBeanConfiguration.class
 })
-public class UserRepositoryTest {
+public class UserRepositoryIT {
 
-    private final static Logger LOG = LoggerFactory.getLogger(UserRepositoryTest.class);
+    private final static Logger LOG = LoggerFactory.getLogger(UserRepositoryIT.class);
 
     @Autowired
     private ApplicationContext context;

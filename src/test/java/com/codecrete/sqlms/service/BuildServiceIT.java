@@ -39,12 +39,12 @@ import static java.util.stream.Collectors.toList;
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes=UnitTestConfiguration.class)
-public class BuildServiceTest {
+public class BuildServiceIT {
     
     /**
      * Log4j logger.
      */
-    private static final Logger LOG = LogManager.getLogger(BuildServiceTest.class);
+    private static final Logger LOG = LogManager.getLogger(BuildServiceIT.class);
     
     @Autowired
     private BuildService buildService;
@@ -61,26 +61,36 @@ public class BuildServiceTest {
     public void build() throws Exception {
 
         // TODO: Unpack domain jar
-        JarFile jar = getJar("codecrete-domain-0.0.1.jar");
-        Path source = unpackJar(jar);
+        JarFile jar = getLoadedJar("codecrete-domain-0.0.1.jar");
+        Path source = extract(jar);
+        LOG.debug("Unpacked Jar to {}", source.toString());
+        
         String domain = "test";
         BuildReport report = buildService.build(source, domain);
+        
+        
     }
     
     
-    // Using the classpath determine the absolute path of a jar so we can extract the sql files from it to create the database
-    private JarFile getJar(String name) throws IOException {
+    // Using the classpath determine the absolute path of a jar so we can
+    // extract the sql files from it to create the database
+    private JarFile getLoadedJar(String name) throws IOException {
     
         JarFile jar = null;
         
         // find the path of a jar from the classloader
-        ClassLoader cl = ClassLoader.getSystemClassLoader();
-        URL[] urls = ((URLClassLoader)cl).getURLs();
+        URLClassLoader loader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+        URL[] urls = loader.getURLs();
     
-        for(URL url: urls) {
+        for(URL url : urls) {
+    
+            System.out.println(url.toString());
+    
+            String separator = System.getProperty("file.separator");
             
             // Check name for match and return its absolute path
-            if (url.getFile().endsWith(name)) {
+            if (url.getFile().endsWith(separator+name)) {
+                
                 jar = new JarFile(url.getFile());
                 break;
             }
@@ -90,7 +100,7 @@ public class BuildServiceTest {
     }
     
     // Return where its unpacked? as source?
-    private Path unpackJar(JarFile jar) throws IOException {
+    private Path extract(JarFile jar) throws IOException {
         
         // Test whether the jar entry has the configured file extension
         Predicate<JarEntry> hasExtension = (entry) -> {
@@ -124,7 +134,9 @@ public class BuildServiceTest {
         return tmp.resolve("mysql");
     }
     
-    // TODO:
+//    private Properties getProperties(JarFile jar, String name) {}
+//    private List<Properties> getProperties(JarFile jar) {}
+    // TODO: Deprecate
     private Properties getProperties(JarFile jar) throws Exception, IOException {
 
         Properties properties = new Properties();

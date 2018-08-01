@@ -1,3 +1,5 @@
+[#import "/templates/macros/triggers/BeforeUpdate.ftl" as macro]
+
 DELIMITER $$
 
 #
@@ -9,14 +11,17 @@ CREATE DEFINER = '${user}'@'${host}' TRIGGER beforeUpdate${table}
   FOR EACH ROW
   BEGIN
 
-    IF NEW.id != OLD.id THEN
+    # Make sure triggers are enabled first before running
+    IF runTrigger() THEN
 
-      [#list fields as field]
-          [@utils.beforeUpdate field=field/]
-      [/#list]
+        IF NEW.id != OLD.id THEN
 
+          [#list fields as field]
+              [@macro.beforeUpdate field=field/]
+          [/#list]
+
+        END IF;
     END IF;
-
   END $$
 
 DELIMITER ;

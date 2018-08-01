@@ -8,6 +8,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 /**
+ * Attempt to rollback to previous state by reading a buildReport and systematically
+ * undoing all users, triggers, tables, routines, records? and patches recorded.
+ *
  * @author Eliot Morris
  */
 @Service

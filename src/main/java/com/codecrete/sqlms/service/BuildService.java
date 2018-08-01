@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
@@ -21,6 +22,8 @@ import java.util.function.BiPredicate;
 import static java.util.stream.Collectors.toList;
 
 /**
+ *
+ *
  * @author Eliot Morris
  */
 @Service
@@ -73,7 +76,7 @@ public class BuildService {
     public BuildService() {}
     
     @PreAuthorize("hasRole('ROLE_MULE')")
-    public BuildReport build(Path source, String domain) throws IOException {
+    public BuildReport build(Path source, String domain) throws IOException, SQLException {
     
         // TODO: Check if source name ends in .jar and if so unpack?
         
@@ -153,7 +156,7 @@ public class BuildService {
         }
         
         // Execute the concatenated script and return the number of statements executed.
-        report.setSize(repository.execute(batch));
+        report.setSize(repository.execute(batch, domain));
         
         return report;
     }

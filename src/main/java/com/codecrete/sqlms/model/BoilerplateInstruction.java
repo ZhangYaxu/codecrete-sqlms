@@ -6,16 +6,16 @@ import org.apache.logging.log4j.Logger;
 /**
  * @author Eliot Morris
  */
-public class AfterInsertInstruction {
+public class BoilerplateInstruction {
     
     /**
      * Log4j logger.
      */
-    private static final Logger LOG = LogManager.getLogger(AfterInsertInstruction.class);
-
+    private static final Logger LOG = LogManager.getLogger(BoilerplateInstruction.class);
+    
     private String table;
     
-    public AfterInsertInstruction() {}
+    public BoilerplateInstruction() {}
     
     /**
      * Getter method for table variable.

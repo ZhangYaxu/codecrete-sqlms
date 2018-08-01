@@ -3,7 +3,7 @@ DELIMITER $$
 #
 # Stored procedure to select the specified ${table} record
 #
-# DROP PROCEDURE IF EXISTS select${table};
+DROP PROCEDURE IF EXISTS select${table};
 
 CREATE DEFINER = '${definer}'@'${host}' PROCEDURE select${table} (
 

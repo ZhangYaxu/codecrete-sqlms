@@ -1,3 +1,5 @@
+[#import "/templates/macros/triggers/AfterInsert.ftl" as macro]
+
 DELIMITER $$
 
 #
@@ -9,14 +11,18 @@ CREATE DEFINER = '${user}'@'${host}' TRIGGER afterInsert${table}
   FOR EACH ROW
   BEGIN
 
-    # Insert records into ${auditTable} table
-    [#list fields as field]
-        [@utils.afterInsert field=field/]
-    [/#list]
+    # Make sure triggers are enabled first before running
+    IF runTrigger() THEN
 
-    INSERT INTO ${auditTable} (userId, event, field, value, invoker)
-    VALUES (NEW.id, 'INSERT', '${field}', NEW.${field}, USER());
+        # Insert records into ${auditTable} table
+        [#list fields as field]
+            [@macro.afterInsert field=field/]
+        [/#list]
 
+        INSERT INTO ${auditTable} (userId, event, field, value, invoker)
+        VALUES (NEW.id, 'INSERT', '${field}', NEW.${field}, USER());
+
+    END IF;
   END $$
 
 DELIMITER ;

@@ -46,7 +46,7 @@ public class BoilerplateService {
     public BoilerplateService() {}
     
     @PreAuthorize("hasRole('ROLE_MULE')")
-    public String afterInsertTrigger(String className) {
+    public String afterInsertTrigger(String table) {
     
     
 //    Map<String, Object> variables = new HashMap<>();
@@ -63,18 +63,27 @@ public class BoilerplateService {
         return new String();
     }
     
+    //
     @PreAuthorize("hasRole('ROLE_MULE')")
-    public String beforeDeleteTrigger(String className) {
+    public String auditTable(String table) {
         return new String();
     }
     
+    //
     @PreAuthorize("hasRole('ROLE_MULE')")
-    public String beforeUpdateTrigger(String className) {
+    public String beforeDeleteTrigger(String table) {
         return new String();
     }
     
+    //
     @PreAuthorize("hasRole('ROLE_MULE')")
-    public String deleteProcedure(String className) throws IOException, TemplateException, ClassNotFoundException {
+    public String beforeUpdateTrigger(String table) {
+        return new String();
+    }
+    
+    //
+    @PreAuthorize("hasRole('ROLE_MULE')")
+    public String deleteProcedure(String table) throws IOException, TemplateException, ClassNotFoundException {
         
         Configuration configuration = new Configuration(new Version("2.3.28"));
         configuration.setDefaultEncoding("UTF-8");
@@ -84,12 +93,18 @@ public class BoilerplateService {
         Map<String,Object> variables = new HashMap<>();
         variables.put("definer", getDefiner());
         variables.put("host", getHost());
-        variables.put("table", getTable(Class.forName(className)));
+        variables.put("table", getTable(Class.forName(table)));
         
         return getSql(template, variables);
     }
     
-    //
+    /**
+     * Get the list of all the Column annotations name attribute found in the
+     * specified class.
+     *
+     * @param klass The Class to reflect for column annotations
+     * @return The list of each Column annotations name
+     */
     private List<String> getColumns(Class klass) {
     
         List<String> fields = new ArrayList<>();
@@ -131,7 +146,16 @@ public class BoilerplateService {
         return this.host;
     }
     
-    // TODO: Rename: getString?
+    /**
+     * Given a freemarker template and a corresponding List of variables, substitute
+     * the templates variables for the specified values.
+     *
+     * @param template A valid freemarker template
+     * @param variables A Map of variables for the template to substitute
+     * @return The output of the populated template
+     * @throws IOException
+     * @throws TemplateException
+     */
     private String getSql(Template template, Map<String,Object> variables) throws IOException, TemplateException {
         
         String sql = new String();
@@ -160,12 +184,12 @@ public class BoilerplateService {
     }
     
     @PreAuthorize("hasRole('ROLE_MULE')")
-    public String insertProcedure(String className) {
+    public String insertProcedure(String table) {
         return new String();
     }
     
     @PreAuthorize("hasRole('ROLE_MULE')")
-    public String selectProcedure(String className) throws IOException, ClassNotFoundException, TemplateException {
+    public String selectProcedure(String table) throws IOException, ClassNotFoundException, TemplateException {
     
         Configuration configuration = new Configuration(new Version("2.3.28"));
         configuration.setDefaultEncoding("UTF-8");
@@ -176,7 +200,7 @@ public class BoilerplateService {
         variables.put("definer", getDefiner());
         variables.put("host", getHost());
     
-        Class klass = Class.forName(className);
+        Class klass = Class.forName(table);
         variables.put("table", getTable(klass));
         variables.put("fields", getColumns(klass));
     
@@ -184,7 +208,7 @@ public class BoilerplateService {
     }
     
     @PreAuthorize("hasRole('ROLE_MULE')")
-    public String updateProcedure(String className) {
+    public String updateProcedure(String table) {
         return new String();
     }
 }

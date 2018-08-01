@@ -1,8 +1,10 @@
+[#import "/templates/macros/triggers/BeforeDelete.ftl" as macro]
+
 DELIMITER $$
 
 #
-# Before any row is deleted from the UserRole table this trigger inserts the values
-# to be deleted into the UserRoleAudit table.
+# Before any row is deleted from the ${table} table this trigger inserts the values
+# to be deleted into the ${table}Audit table.
 #
 CREATE DEFINER = '${user}'@'${host}' TRIGGER beforeDelete${table}
   BEFORE DELETE ON ${table}
@@ -13,7 +15,7 @@ CREATE DEFINER = '${user}'@'${host}' TRIGGER beforeDelete${table}
     IF runTrigger() THEN
 
       [#list fields as field]
-          [@utils.beforeDelete field=field/]
+          [@macro.beforeDelete field=field/]
       [/#list]
 
     END IF;

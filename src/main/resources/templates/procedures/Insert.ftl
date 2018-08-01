@@ -3,9 +3,9 @@ DELIMITER $$
 #
 # Stored procedure to insert a new ${table} record.
 #
-# DROP PROCEDURE IF EXISTS insert${table};
+DROP PROCEDURE IF EXISTS insert${table};
 
-CREATE DEFINER = '${user}'@'${host}' PROCEDURE insert${table} (
+CREATE DEFINER = '${definer}'@'${host}' PROCEDURE insert${table} (
 
   #
   [#list fields as field]

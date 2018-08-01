@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -39,30 +40,28 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailsService userDetailsService;
     
-//    @Bean
-//    public DaoAuthenticationProvider daoAuthenticationProvider() {
-//
-//        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-//        authenticationProvider.setUserDetailsService(userDetailsService());
-//        authenticationProvider.setPasswordEncoder(passwordEncoder());
-//
-//        return authenticationProvider;
-//    }
+    @Bean
+    public DaoAuthenticationProvider daoAuthentication() {
 
+        DaoAuthenticationProvider daoAuthentication = new DaoAuthenticationProvider();
+        daoAuthentication.setUserDetailsService(userDetailsService);
+        daoAuthentication.setPasswordEncoder(passwordEncoder());
 
-    // Authorization
+        return daoAuthentication;
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
     
         http
                 .authorizeRequests()
                 .antMatchers("/login").permitAll()
-                .antMatchers("/dashboard").hasRole("MULE")
-                .antMatchers("/boilerplate/**").hasRole("MULE")
-                .antMatchers("/user/**").hasRole("ADMIN")
                 .and()
                 .formLogin()
-                .loginPage("/login").failureUrl("/404");
+                .loginPage("/login")
+                    .defaultSuccessUrl("/dashboard")
+                    .successHandler(successHandler())
+                    .failureUrl("/404");
         
         
 //        http.csrf().disable()
@@ -85,9 +84,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //                .and()
 //                .rememberMe().alwaysRemember(true);
     }
-
-
-    // Authentication
+    
     @Override
     public void configure(AuthenticationManagerBuilder authentication) throws Exception {
         authentication.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
@@ -112,7 +109,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         @Override
         public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
-            LOG.debug("AuthenticationSuccess");
+            
+            LOG.trace("AuthenticationSuccess");
             redirectStrategy.sendRedirect(request, response, "/dashboard");
         }
     }

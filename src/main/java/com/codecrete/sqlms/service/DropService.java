@@ -9,6 +9,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 /**
+ * Using the specified schema, perform a hard 'drop schema' command.
+ *
  * @author Eliot Morris
  */
 @Service
