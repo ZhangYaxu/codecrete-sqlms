@@ -32,10 +32,6 @@ public class AuthenticateIT {
     @Autowired
     WebApplicationContext context;
     
-//    @Autowired
-//    private MockMvc mvc;
-    
-    
     private MockMvc mockMvc;
 
     @Before
@@ -47,14 +43,10 @@ public class AuthenticateIT {
                 .build();
     }
     
-    // FIX: (AuthenticationCredentialsNotFoundException) Database out of sync
     @Test
     public void testAuthenticate() throws Exception {
 
-//        this.mvc.perform(formLogin("/login").user("tim.santaniello@codecrete.com").password("password"))
-//                .andExpect(authenticated().withRoles("USER","MULE","ADMIN","ACTUATOR"));
-
-        this.mockMvc.perform(formLogin().user("tim.santaniello@codecrete.com").password("password"))
+        this.mockMvc.perform(formLogin("/login").user("tim.santaniello@codecrete.com").password("password"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(authenticated());
     }

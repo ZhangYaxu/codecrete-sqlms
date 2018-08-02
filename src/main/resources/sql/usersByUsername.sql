@@ -1,13 +1,7 @@
 SELECT
-  User.id,
-  User.companyId,
-  User.email,
   User.email AS username,
-  User.forename,
-  User.surname,
-  User.created,
-  User.modified,
+  User.password AS password,
   TRUE as enabled
-FROM User
-WHERE User.email = ?
-AND User.deleted IS NULL;
+FROM domain.User
+WHERE User.deleted IS NULL
+AND User.email = ?

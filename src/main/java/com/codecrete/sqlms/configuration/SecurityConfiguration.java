@@ -44,13 +44,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     DataSource dataSource;
     
     @Autowired
-    private UserDetailsService userDetailsService;
+    private UserDetailsService userService;
     
     @Bean
     public DaoAuthenticationProvider daoAuthentication() {
 
         DaoAuthenticationProvider daoAuthentication = new DaoAuthenticationProvider();
-        daoAuthentication.setUserDetailsService(userDetailsService);
+        daoAuthentication.setUserDetailsService(this.userService);
         daoAuthentication.setPasswordEncoder(passwordEncoder());
 
         return daoAuthentication;
@@ -59,44 +59,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
     
-        http.csrf().disable()
-                .httpBasic()
-                .and()
+        http
                 .authorizeRequests()
-                .antMatchers( "/**").permitAll()
-                .anyRequest().authenticated();
-        
-//        http
-//                .authorizeRequests()
-//                .antMatchers("/login").permitAll()
-//                .antMatchers("/boilerplate/**").hasRole("ADMIN")
-//                .and()
-//                .formLogin()
-//                .loginPage("/login")
-//                    .defaultSuccessUrl("/dashboard")
-//                    .successHandler(successHandler())
-//                    .failureUrl("/404");
-        
-        
-//        http.csrf().disable()
-//                .authorizeRequests()
-//                .antMatchers("/login").permitAll()
-//                .antMatchers("/dashboard").hasRole("ADMIN")
-//                .antMatchers("/boilerplate/**").hasRole("ADMIN")
-//                .antMatchers("/user/**").hasRole("ADMIN")
-//// TODO: FIX!   .anyRequest().authenticated()
-//                .and()
-//                .formLogin()
-//                    .loginPage("/login").permitAll()
-//                    .defaultSuccessUrl("/dashboard")
-//                    .successHandler(successHandler())
-//                    .failureUrl("/404")
-//                .and()
-//                .exceptionHandling().accessDeniedPage("/403")
-//                .and()
-//                .logout().permitAll().deleteCookies("remember-me")
-//                .and()
-//                .rememberMe().alwaysRemember(true);
+                .antMatchers("/dashboard").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .formLogin()
+                .loginPage("/login").permitAll()
+                .and()
+                .logout().permitAll();
     }
     
     @Override
