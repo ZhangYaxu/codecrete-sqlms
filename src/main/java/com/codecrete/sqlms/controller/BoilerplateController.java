@@ -94,7 +94,7 @@ public class BoilerplateController {
         
         String table = instruction.getTable();
         String json = this.boilerplateService.selectProcedure(table);
-        
+
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
     

@@ -1,4 +1,4 @@
-codecrete-sqlms 0.0.1
+${project.artifactId} ${project.version}
 ========================================
 1. [Introduction](#introduction)
 1. [Installation](#installation)
@@ -72,7 +72,7 @@ Installation
 ------------
 First clone the git repository.
 
-`git clone https://github.com/morrisde/codecrete-sqlms.git`
+`git clone https://github.com/${git.user}/${project.artifactId}.git`
 
 Then install the jar to your local maven repository.
 
@@ -83,9 +83,9 @@ Finally add the dependency to your projects pom.
 <project>
     <dependencies>
         <dependency>
-            <groupId>com.codecrete</groupId>
-            <artifactId>codecrete-sqlms</artifactId>
-            <version>0.0.1</version>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>${project.artifactId}</artifactId>
+            <version>${project.version}</version>
         </dependency>
         ...
     </dependencies>
@@ -121,10 +121,10 @@ The Compiler Plugin is used to compile the sources of your project.
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
+                <version>${maven.compiler.plugin.version}</version>
                 <configuration>
-                    <source>1.8.0_121</source>
-                    <target>1.8.0_121</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                     <compilerArgs>
                         <arg>-verbose</arg>
                         <arg>-Xlint:all,-path</arg>
@@ -152,7 +152,7 @@ phase of the lifecycle. By default it will execute any test matching the pattern
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.19.1</version>
+                <version>${maven.failsafe.plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -183,7 +183,7 @@ phase of the lifecycle.
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
+                <version>${maven.jar.plugin.version}</version>
             </plugin>
            ...
         </plugins>
@@ -205,7 +205,7 @@ project.
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.4</version>
+                <version>${maven.javadoc.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>create-javadocs</id>
@@ -239,7 +239,7 @@ the projects `/docs` directory for compatibility with [GitHubs pages](https://he
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.0.2</version>
+                <version>${maven.resources.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>copy-javadocs</id>
@@ -248,10 +248,10 @@ the projects `/docs` directory for compatibility with [GitHubs pages](https://he
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>/Users/dmorris/Src/java/codecrete-sqlms/docs</outputDirectory>
+                            <outputDirectory>${project.basedir}/docs</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>/Users/dmorris/Src/java/codecrete-sqlms/target/site/apidocs</directory>
+                                    <directory>${project.reporting.outputDirectory}/apidocs</directory>
                                     <filtering>false</filtering>
                                 </resource>
                             </resources>
@@ -280,7 +280,7 @@ phase of the lifecycle.
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.1</version>
+                <version>${maven.source.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -314,7 +314,7 @@ phase of the lifecycle. It runs any files with names matching the following regu
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.19.1</version>
+                <version>${maven.surefire.plugin.version}</version>
             </plugin>
            ...
         </plugins>
@@ -340,7 +340,7 @@ phase.
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
-                <version>2.5</version>
+                <version>${versions.maven.plugin.version}</version>
                 <executions>
                     <execution>
                         <phase>process-resources</phase>
@@ -365,32 +365,32 @@ Dependencies
 + [**JUnit**](http://junit.org/junit4/): Unit testing framework.
     + **GroupId:** junit
     + **ArtifactId:** [junit](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22junit%22%20AND%20a%3A%22junit%22)
-    + **Version**: 4.12
+    + **Version**: ${junit.version}
     + **Scope**: test
 
 + [**AssertJ**](http://joel-costigliola.github.io/assertj/): Rich and fluent 
 assertions for testing for Java.
     + **GroupId:** org.assertj
     + **ArtifactId:** [assertj-core](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.assertj%22%20AND%20a%3A%22assertj-core%22)
-    + **Version**: 3.10.0
+    + **Version**: ${assertj.core.version}
     + **Scope**: test
 
 + [**Log4j Api**](https://logging.apache.org/log4j/2.x/): Apache logging framework 
 for Java.
     + **GroupId:** org.apache.logging.log4j
     + **ArtifactId:** [log4j-api](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.apache.logging.log4j%22%20AND%20a%3A%22log4j-api%22)
-    + **Version**: 2.11.0
+    + **Version**: ${log4j.api.version}
     
 + [**Log4j Core**](https://logging.apache.org/log4j/2.x/): Apache logging framework 
 for Java.    
     + **GroupId:** org.apache.logging.log4j
     + **ArtifactId:** [log4j-core](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.apache.logging.log4j%22%20AND%20a%3A%22log4j-core%22)
-    + **Version**: 2.11.0
+    + **Version**: ${log4j.core.version}
 
 
 Documentation
 -------------
-See [JavaDocs](https://morrisde.github.io/codecrete-sqlms/)
+See [JavaDocs](https://${git.user}.github.io/${project.artifactId}/)
 
 
 Authors

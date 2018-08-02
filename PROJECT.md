@@ -1,6 +1,6 @@
 Project
 -------
-+ MAKE IT LOOK LIKE DEMOS DUMMY!
++ Generate every unique query procedure for each table name: 'selectTableByUnique'
 + Finish entity annotations
 + Replace all BoilerplateService individual instructions with BoilerplateInstruction
 

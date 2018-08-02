@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -22,7 +21,6 @@ import static java.nio.file.StandardOpenOption.WRITE;
 /**
  * @author Eliot Morris
  */
-@SpringBootTest
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes=UnitTestConfiguration.class)
 public class BoilerplateServiceTest {
@@ -44,13 +42,14 @@ public class BoilerplateServiceTest {
     public void testDeleteProcedure() throws Exception {
 
         String sql = this.boilerplateService.deleteProcedure("com.codecrete.domain.model.User");
+        System.out.format("SQL: %s", sql);
         
+        // FIX: Move to BoilerplateService
         Path tmp = Files.createTempDirectory("tmp");
         Path file = tmp.resolve("deleteUser.sql");
-        
         Files.write(file, sql.getBytes(UTF_8), CREATE_NEW, WRITE, DELETE_ON_CLOSE);
     
-        System.out.format("deleteUser: %s", file.getFileName());
+        System.out.format("deleteUser: %s", file);
     }
     
     @Test
@@ -59,7 +58,6 @@ public class BoilerplateServiceTest {
         String sql = this.boilerplateService.selectProcedure("com.codecrete.domain.model.User");
 
         System.out.println(sql);
-    
     }
     
 }

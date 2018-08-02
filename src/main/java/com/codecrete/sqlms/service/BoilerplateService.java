@@ -1,5 +1,6 @@
 package com.codecrete.sqlms.service;
 
+import com.codecrete.utils.MysqlUtils;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -64,25 +65,25 @@ public class BoilerplateService {
     }
     
     //
-    @PreAuthorize("hasRole('ROLE_MULE')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String auditTable(String table) {
         return new String();
     }
     
     //
-    @PreAuthorize("hasRole('ROLE_MULE')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String beforeDeleteTrigger(String table) {
         return new String();
     }
     
     //
-    @PreAuthorize("hasRole('ROLE_MULE')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String beforeUpdateTrigger(String table) {
         return new String();
     }
     
     //
-    @PreAuthorize("hasRole('ROLE_MULE')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String deleteProcedure(String table) throws IOException, TemplateException, ClassNotFoundException {
         
         Configuration configuration = new Configuration(new Version("2.3.28"));
@@ -105,26 +106,34 @@ public class BoilerplateService {
      * @param klass The Class to reflect for column annotations
      * @return The list of each Column annotations name
      */
-    private List<String> getColumns(Class klass) {
+    private List<ClassField> getClassFields(Class klass) {
     
-        List<String> fields = new ArrayList<>();
+        // TODO: Return a more comprehensive object than string
+        List<ClassField> fields = new ArrayList<>();
         
-        for (Field field : klass.getFields()) {
+        for (Field field : klass.getDeclaredFields()) {
             field.setAccessible(true);
             
-            //
+            // Simple
             if (field.isAnnotationPresent(Column.class)) {
+                
                 Column column = field.getAnnotation(Column.class);
-                fields.add(column.name());
+                fields.add(new ClassField(field.getName(), column.name(), field.getType().getSimpleName(), column.unique()));
+            }
+
+            // Nested object in column
+            else if (field.isAnnotationPresent(JoinColumn.class)) {
+                
+                JoinColumn column = field.getAnnotation(JoinColumn.class);
+                fields.add(new ClassField(field.getName(), column.name(), "INTEGER", column.unique()));
             }
             
-            //
-            else if (field.isAnnotationPresent(JoinColumn.class)) {
-                JoinColumn column = field.getAnnotation(JoinColumn.class);
-                fields.add(column.name());
+            // Ignore field without correct annotation
+            else {
+                LOG.trace("Field {} does not have a @Column annotation and is being ignored", field.getName());
             }
         }
-        
+    
         return fields;
     }
     
@@ -133,7 +142,7 @@ public class BoilerplateService {
      *
      * @return the definer object
      */
-    public String getDefiner() {
+    private String getDefiner() {
         return this.definer;
     }
     
@@ -142,7 +151,7 @@ public class BoilerplateService {
      *
      * @return the host object
      */
-    public String getHost() {
+    private String getHost() {
         return this.host;
     }
     
@@ -170,7 +179,7 @@ public class BoilerplateService {
         return sql;
     }
     
-    //
+    // Retrieve the class Table annotations name attribute value.
     private String getTable(Class klass) {
     
         String name = null;
@@ -183,12 +192,14 @@ public class BoilerplateService {
         return name;
     }
     
-    @PreAuthorize("hasRole('ROLE_MULE')")
+    //
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String insertProcedure(String table) {
         return new String();
     }
     
-    @PreAuthorize("hasRole('ROLE_MULE')")
+    //
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String selectProcedure(String table) throws IOException, ClassNotFoundException, TemplateException {
     
         Configuration configuration = new Configuration(new Version("2.3.28"));
@@ -202,13 +213,133 @@ public class BoilerplateService {
     
         Class klass = Class.forName(table);
         variables.put("table", getTable(klass));
-        variables.put("fields", getColumns(klass));
+        
+        List<String> fields = new ArrayList<>();
+        Map<String,String> mode = new HashMap<>();
+        Map<String,Object> type = new HashMap<>();
     
+        // Default to id
+        variables.put("unique", "id");
+        
+        for (ClassField field : getClassFields(klass)) {
+            
+            // Populate fields list
+            fields.add(field.getName());
+            
+            // prefer any field over id
+            if (field.isUnique()) {
+                if (variables.get("unique") == "id") {
+                    variables.put("unique", field.getName());
+                }
+            }
+            
+            // Populate mode map
+            mode.put(field.getName(), field.isUnique() ? "INOUT" : "OUT");
+    
+            // Populate type map
+            type.put(field.getName(), field.getSqlType());
+        }
+    
+        variables.put("fields", fields);
+        variables.put("mode", mode);
+        variables.put("type", type);
+        
         return getSql(template, variables);
     }
     
-    @PreAuthorize("hasRole('ROLE_MULE')")
+    //
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String updateProcedure(String table) {
         return new String();
+    }
+    
+    /**
+     * Represents a class field with information used to translate from its
+     * native java type to its corresponding mysql data type.
+     */
+    private class ClassField {
+
+        /**
+         *
+         */
+        private final String column;
+        
+        /**
+         * The name of the
+         */
+        private final String name;
+    
+        /**
+         *
+         */
+        private final String javaType;
+    
+        /**
+         *
+         */
+        private final String sqlType;
+    
+        /**
+         *
+         */
+        private final boolean unique;
+    
+        /**
+         *
+         */
+        public ClassField(String name, String column, String javaType, boolean unique) {
+            
+            
+            this.name = name;
+            this.column = column;
+            this.javaType = javaType;
+            this.sqlType = MysqlUtils.toSqlType(javaType);
+            this.unique = unique;
+        }
+    
+        /**
+         * Getter method for column variable.
+         *
+         * @return the column object
+         */
+        public String getColumn() {
+            return this.column;
+        }
+    
+        /**
+         * Getter method for javaType variable.
+         *
+         * @return the javaType object
+         */
+        public String getJavaType() {
+            return this.javaType;
+        }
+    
+        /**
+         * Getter method for name variable.
+         *
+         * @return the name object
+         */
+        public String getName() {
+            return this.name;
+        }
+    
+        /**
+         * Getter method for sqlType variable.
+         *
+         * @return the sqlType object
+         */
+        public String getSqlType() {
+            return this.sqlType;
+        }
+    
+        /**
+         * Getter method for unique variable.
+         *
+         * @return the unique object
+         */
+        public boolean isUnique() {
+            return this.unique;
+        }
     }
 }

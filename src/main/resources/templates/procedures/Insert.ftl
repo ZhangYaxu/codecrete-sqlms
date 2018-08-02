@@ -8,22 +8,22 @@ DROP PROCEDURE IF EXISTS insert${table};
 CREATE DEFINER = '${definer}'@'${host}' PROCEDURE insert${table} (
 
   #
-  [#list fields as field]
+  <#list fields as field>
     ${mode[field]} field ${type[field]}${field?is_last?then("", ",")}
-  [/#list]
+  </#list>
 )
   SQL SECURITY DEFINER
   BEGIN
 
     INSERT INTO ${table} (
-      [#list fields as field]
+      <#list fields as field>
         field${field?is_last?then("", ",")}
-      [/#list]
+      </#list>
     )
     VALUES (
-      [#list fields as field]
+      <#list fields as field>
         ${values[field]}{field?is_last?then("", ",")}
-      [/#list]
+      </#list>
     );
 
     SELECT LAST_INSERT_ID() INTO id;

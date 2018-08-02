@@ -23,7 +23,10 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 import java.io.IOException;
+
+import static com.codecrete.utils.FileUtils.getString;
 
 /**
  *
@@ -36,7 +39,10 @@ import java.io.IOException;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     
     private static final Logger LOG = LogManager.getLogger(SecurityConfiguration.class);
-
+    
+    @Autowired
+    DataSource dataSource;
+    
     @Autowired
     private UserDetailsService userDetailsService;
     
@@ -53,15 +59,23 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
     
-        http
-                .authorizeRequests()
-                .antMatchers("/login").permitAll()
+        http.csrf().disable()
+                .httpBasic()
                 .and()
-                .formLogin()
-                .loginPage("/login")
-                    .defaultSuccessUrl("/dashboard")
-                    .successHandler(successHandler())
-                    .failureUrl("/404");
+                .authorizeRequests()
+                .antMatchers( "/**").permitAll()
+                .anyRequest().authenticated();
+        
+//        http
+//                .authorizeRequests()
+//                .antMatchers("/login").permitAll()
+//                .antMatchers("/boilerplate/**").hasRole("ADMIN")
+//                .and()
+//                .formLogin()
+//                .loginPage("/login")
+//                    .defaultSuccessUrl("/dashboard")
+//                    .successHandler(successHandler())
+//                    .failureUrl("/404");
         
         
 //        http.csrf().disable()
@@ -87,7 +101,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     
     @Override
     public void configure(AuthenticationManagerBuilder authentication) throws Exception {
-        authentication.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+    
+//        authentication.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+    
+        // Load sql from file
+        String usersByUsernameSql = getString(getClass().getResourceAsStream("/sql/usersByUsername.sql"));
+        String authoritiesByUsernameSql = getString(getClass().getResourceAsStream("/sql/authoritiesByUsername.sql"));
+        
+        authentication.jdbcAuthentication().dataSource(this.dataSource)
+                .usersByUsernameQuery(usersByUsernameSql)
+                .authoritiesByUsernameQuery(authoritiesByUsernameSql)
+                .passwordEncoder(passwordEncoder());
     }
 
     @Bean
