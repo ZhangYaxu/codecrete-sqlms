@@ -42,14 +42,13 @@ public class BoilerplateServiceTest {
     public void testDeleteProcedure() throws Exception {
 
         String sql = this.boilerplateService.deleteProcedure("com.codecrete.domain.model.User");
-        System.out.format("SQL: %s", sql);
+        System.out.format("SQL: %s\n", sql);
         
         // FIX: Move to BoilerplateService
         Path tmp = Files.createTempDirectory("tmp");
         Path file = tmp.resolve("deleteUser.sql");
         Files.write(file, sql.getBytes(UTF_8), CREATE_NEW, WRITE, DELETE_ON_CLOSE);
     
-        System.out.format("deleteUser: %s", file);
     }
     
     @Test

@@ -67,12 +67,12 @@ public class MockBeanConfiguration {
     
     @Bean
     public LocalDateTime mockCreated() {
-        return LocalDateTime.of(1979, 11, 28, 11, 34, 00, 403);
+        return LocalDateTime.of(1979, 9, 28, 11, 34, 00, 000);
     }
     
     @Bean
     public LocalDateTime mockModified() {
-        return LocalDateTime.of(2014, 12, 14, 11, 34, 00, 403);
+        return LocalDateTime.of(2014, 12, 14, 11, 34, 00, 000);
     }
     
     @Bean

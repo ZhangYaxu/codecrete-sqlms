@@ -59,12 +59,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
     
-        http
+        http.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/dashboard").permitAll()
+                .antMatchers("/boilerplate/**").hasRole("ADMIN")
+                .antMatchers("/build").hasRole("MULE")
+                .antMatchers("/drop").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
+                .defaultSuccessUrl("/dashboard")
+                .successHandler(successHandler())
                 .loginPage("/login").permitAll()
                 .and()
                 .logout().permitAll();
@@ -72,9 +77,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     
     @Override
     public void configure(AuthenticationManagerBuilder authentication) throws Exception {
-    
-//        authentication.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-    
+        
         // Load sql from file
         String usersByUsernameSql = getString(getClass().getResourceAsStream("/sql/usersByUsername.sql"));
         String authoritiesByUsernameSql = getString(getClass().getResourceAsStream("/sql/authoritiesByUsername.sql"));
@@ -84,7 +87,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authoritiesByUsernameQuery(authoritiesByUsernameSql)
                 .passwordEncoder(passwordEncoder());
     }
-
+    
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

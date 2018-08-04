@@ -37,8 +37,6 @@ public class BoilerplateControllerTest {
     
     private MockMvc mvc;
     
-    public BoilerplateControllerTest() {}
-    
     @Before
     public void setup() {
         
@@ -49,12 +47,12 @@ public class BoilerplateControllerTest {
     }
     
     @Test
-    @WithMockUser(roles="ADMIN", username="tim.santaniello@codecrete.com")
+    @WithMockUser(roles={"ADMIN", "MULE"}, username="tim.santaniello@codecrete.com")
     public void testSelectProcedure() throws Exception {
         
         // Read BoilerplateInstruction from resource file
         String json = getString(BoilerplateControllerTest.class.getResourceAsStream("/json/BoilerplateInstruction.json"));
-
+        
         mvc.perform(post("/boilerplate/procedure/select")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))

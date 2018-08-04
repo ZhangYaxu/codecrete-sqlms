@@ -30,7 +30,7 @@ public class AuthenticateIT {
     private static final Logger LOG = LogManager.getLogger(AuthenticateIT.class);
     
     @Autowired
-    WebApplicationContext context;
+    private WebApplicationContext context;
     
     private MockMvc mockMvc;
 
@@ -46,7 +46,9 @@ public class AuthenticateIT {
     @Test
     public void testAuthenticate() throws Exception {
 
-        this.mockMvc.perform(formLogin("/login").user("tim.santaniello@codecrete.com").password("password"))
+        this.mockMvc.perform(formLogin("/login")
+                .user("tim.santaniello@codecrete.com")
+                .password("password"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(authenticated());
     }
