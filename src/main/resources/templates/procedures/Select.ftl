@@ -1,11 +1,11 @@
-DELIMITER $$
-
 #
 # Stored procedure to select the specified ${table} record
 #
-# DROP PROCEDURE IF EXISTS select${table};
+DROP PROCEDURE IF EXISTS select${table}By${unique?cap_first};
 
-CREATE DEFINER = '${definer}'@'${host}' PROCEDURE select${table} (
+DELIMITER $$
+
+CREATE DEFINER = '${definer}'@'${host}' PROCEDURE select${table}By${unique?cap_first} (
 
   # Define procedure parameters
   <#list fields as field>

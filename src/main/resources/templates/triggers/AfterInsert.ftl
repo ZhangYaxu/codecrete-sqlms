@@ -19,7 +19,7 @@ CREATE DEFINER = '${user}'@'${host}' TRIGGER afterInsert${table}
             [@macro.afterInsert field=field/]
         [/#list]
 
-        INSERT INTO ${auditTable} (userId, event, field, value, invoker)
+        INSERT INTO ${auditTable} (${table?lower_case}Id, event, field, value, invoker)
         VALUES (NEW.id, 'INSERT', '${field}', NEW.${field}, USER());
 
     END IF;

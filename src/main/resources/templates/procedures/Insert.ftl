@@ -1,9 +1,9 @@
-DELIMITER $$
-
 #
 # Stored procedure to insert a new ${table} record.
 #
 DROP PROCEDURE IF EXISTS insert${table};
+
+DELIMITER $$
 
 CREATE DEFINER = '${definer}'@'${host}' PROCEDURE insert${table} (
 

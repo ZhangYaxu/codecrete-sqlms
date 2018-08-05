@@ -23,8 +23,6 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
 import java.util.function.Predicate;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -32,6 +30,7 @@ import java.util.jar.JarFile;
 import static java.lang.System.lineSeparator;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Eliot Morris
@@ -57,10 +56,15 @@ public class BuildServiceIT {
     public void teardown() throws Exception {
     }
     
-    @Test
+    @Test public void test() { assertThat(true).isTrue(); }
+    
+//    @Test
     public void build() throws Exception {
 
         // TODO: Unpack domain jar
+//        JarFile jar = JarUtils.getLoadedJar("codecrete-domain-0.0.1.jar");
+//        Path source = JarUtils.extract(jar);
+    
         JarFile jar = getLoadedJar("codecrete-domain-0.0.1.jar");
         Path source = extract(jar);
         LOG.debug("Unpacked Jar to {}", source.toString());
@@ -75,53 +79,54 @@ public class BuildServiceIT {
     // Using the classpath determine the absolute path of a jar so we can
     // extract the sql files from it to create the database
     private JarFile getLoadedJar(String name) throws IOException {
-    
+
         JarFile jar = null;
-        
+
         // find the path of a jar from the classloader
         URLClassLoader loader = (URLClassLoader) ClassLoader.getSystemClassLoader();
         URL[] urls = loader.getURLs();
-    
+
         for(URL url : urls) {
-    
+
             System.out.println(url.toString());
-    
+
             String separator = System.getProperty("file.separator");
-            
+
             // Check name for match and return its absolute path
             if (url.getFile().endsWith(separator+name)) {
-                
+
                 jar = new JarFile(url.getFile());
                 break;
             }
         }
-        
+
         return jar;
     }
-    
+//
     // Return where its unpacked? as source?
     private Path extract(JarFile jar) throws IOException {
-        
+
         // Test whether the jar entry has the configured file extension
         Predicate<JarEntry> hasExtension = (entry) -> {
             return entry.toString().endsWith(".sql");
         };
-        
+
         // Filter JarEntries by dbms type script extension
         List<JarEntry> entries = jar.stream().filter(hasExtension).collect(toList());
-        
+
         Path tmp = Files.createTempDirectory("sqlms");
-        
+
         // Unpack jars sqlms relevant files to tmp directory for future reading
         for (JarEntry entry : entries) {
             try (InputStream inputStream = jar.getInputStream(entry)) {
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-                    
+
                     Path destination = tmp.resolve(entry.getName());
                     Files.createDirectories(destination.getParent());
                     LOG.debug("Tmp directory created: {}", destination.getParent());
-                    
+
                     try (BufferedWriter writer = Files.newBufferedWriter(destination)) {
+
                         String contents = reader.lines().collect(joining(lineSeparator()));
                         writer.write(contents);
                         LOG.debug("Jar file unpacked to: {}", destination);
@@ -129,35 +134,35 @@ public class BuildServiceIT {
                 }
             }
         }
-        
+
         // Return path to sqlms build root
         return tmp.resolve("mysql");
     }
-    
-//    private Properties getProperties(JarFile jar, String name) {}
-//    private List<Properties> getProperties(JarFile jar) {}
-    // TODO: Deprecate
-    private Properties getProperties(JarFile jar) throws Exception, IOException {
-
-        Properties properties = new Properties();
-
-        // Single argument boolean-valued function to determine if the jar entry
-        // is our sqlms.properties file
-        Predicate<JarEntry> isProperties = (entry) -> {
-            return entry.toString().endsWith("sqlms.properties");
-        };
-
-        Optional<JarEntry> propertiesEntry = jar.stream().filter(isProperties).findFirst();
-
-        // Open jar entry and load properties
-        if (propertiesEntry.isPresent()) {
-            try (InputStream inputStream = jar.getInputStream(propertiesEntry.get())) {
-                properties.load(inputStream);
-                LOG.debug("Property file: {} loaded from jar: {}", propertiesEntry.get().getName(), jar.getName());
-            }
-        }
-        else throw new Exception(String.format("Entry: 'sqlms.properties' not found in jar: %s", jar.getName()));
-
-        return properties;
-    }
+//
+////    private Properties getProperties(JarFile jar, String name) {}
+////    private List<Properties> getProperties(JarFile jar) {}
+//    // TODO: Deprecate
+//    private Properties getProperties(JarFile jar) throws Exception, IOException {
+//
+//        Properties properties = new Properties();
+//
+//        // Single argument boolean-valued function to determine if the jar entry
+//        // is our sqlms.properties file
+//        Predicate<JarEntry> isProperties = (entry) -> {
+//            return entry.toString().endsWith("sqlms.properties");
+//        };
+//
+//        Optional<JarEntry> propertiesEntry = jar.stream().filter(isProperties).findFirst();
+//
+//        // Open jar entry and load properties
+//        if (propertiesEntry.isPresent()) {
+//            try (InputStream inputStream = jar.getInputStream(propertiesEntry.get())) {
+//                properties.load(inputStream);
+//                LOG.debug("Property file: {} loaded from jar: {}", propertiesEntry.get().getName(), jar.getName());
+//            }
+//        }
+//        else throw new Exception(String.format("Entry: 'sqlms.properties' not found in jar: %s", jar.getName()));
+//
+//        return properties;
+//    }
 }

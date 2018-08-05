@@ -1,5 +1,6 @@
 package com.codecrete.sqlms.service;
 
+import com.codecrete.utils.ClassUtils;
 import com.codecrete.utils.MysqlUtils;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -108,20 +109,19 @@ public class BoilerplateService {
      */
     private List<ClassField> getClassFields(Class klass) {
     
-        // TODO: Return a more comprehensive object than string
         List<ClassField> fields = new ArrayList<>();
         
-        for (Field field : klass.getDeclaredFields()) {
+        for (Field field : ClassUtils.getFields(klass)) {
             field.setAccessible(true);
             
-            // Simple
+            // Specified column maps directly
             if (field.isAnnotationPresent(Column.class)) {
                 
                 Column column = field.getAnnotation(Column.class);
                 fields.add(new ClassField(field.getName(), column.name(), field.getType().getSimpleName(), column.unique()));
             }
 
-            // Nested object in column
+            // Nested object in column, requires recursion later
             else if (field.isAnnotationPresent(JoinColumn.class)) {
                 
                 JoinColumn column = field.getAnnotation(JoinColumn.class);
@@ -179,7 +179,7 @@ public class BoilerplateService {
         return sql;
     }
     
-    // Retrieve the class Table annotations name attribute value.
+    // Retrieve the classes Table annotation name attribute value.
     private String getTable(Class klass) {
     
         String name = null;
@@ -217,21 +217,11 @@ public class BoilerplateService {
         List<String> fields = new ArrayList<>();
         Map<String,String> mode = new HashMap<>();
         Map<String,Object> type = new HashMap<>();
-    
-        // Default to id
-        variables.put("unique", "id");
         
         for (ClassField field : getClassFields(klass)) {
             
             // Populate fields list
             fields.add(field.getName());
-            
-            // prefer any field over id
-            if (field.isUnique()) {
-                if (variables.get("unique") == "id") {
-                    variables.put("unique", field.getName());
-                }
-            }
             
             // Populate mode map
             mode.put(field.getName(), field.isUnique() ? "INOUT" : "OUT");
@@ -243,9 +233,29 @@ public class BoilerplateService {
         variables.put("fields", fields);
         variables.put("mode", mode);
         variables.put("type", type);
+    
+        StringBuilder sql = new StringBuilder();
         
-        return getSql(template, variables);
+        // Create sql for each unique field and concat together
+        for (ClassField field : getClassFields(klass)) {
+    
+            if (field.isUnique()) {
+                
+                variables.put("unique", field.getName());
+    
+                sql.append(System.lineSeparator());
+                sql.append(getSql(template, variables));
+            }
+        }
+        
+        return sql.toString();
     }
+    
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public String systemFunction() {
+        return new String();
+    }
+    
     
     //
     @PreAuthorize("hasRole('ROLE_ADMIN')")

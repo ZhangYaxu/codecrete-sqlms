@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static com.codecrete.utils.FileUtils.getString;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -45,15 +46,15 @@ public class BoilerplateControllerTest {
                 .apply(springSecurity())
                 .build();
     }
-    
+    @Test public void test() { assertThat(true).isTrue(); }
     @Test
-    @WithMockUser(roles={"ADMIN", "MULE"}, username="tim.santaniello@codecrete.com")
+    @WithMockUser(roles={"ADMIN", "MULE"}, username="tim.santaniello@codecrete.com", password="password")
     public void testSelectProcedure() throws Exception {
         
         // Read BoilerplateInstruction from resource file
         String json = getString(BoilerplateControllerTest.class.getResourceAsStream("/json/BoilerplateInstruction.json"));
         
-        mvc.perform(post("/boilerplate/procedure/select")
+        this.mvc.perform(post("/boilerplate/procedure/select")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andExpect(status().isOk());

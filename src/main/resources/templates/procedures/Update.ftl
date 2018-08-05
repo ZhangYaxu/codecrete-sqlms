@@ -1,9 +1,9 @@
-DELIMITER $$
-
 #
 # Stored procedure to update an existing ${table} record.
 #
 DROP PROCEDURE IF EXISTS update${table};
+
+DELIMITER $$
 
 CREATE DEFINER = '${user}'@'${host}' PROCEDURE update${table} (
 

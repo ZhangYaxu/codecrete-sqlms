@@ -28,6 +28,14 @@ public class BoilerplateController {
     @Autowired
     private BoilerplateService boilerplateService;
     
+    @RequestMapping(path="function/system", method=RequestMethod.POST, consumes="application/json", produces="application/json")
+    public ResponseEntity<String> systemFunction(@RequestBody BoilerplateInstruction instruction) {
+        
+        String json = this.boilerplateService.systemFunction();
+    
+        return new ResponseEntity<>(json, HttpStatus.OK);
+    }
+    
     //
     @RequestMapping(path="table/audit", method=RequestMethod.POST, consumes="application/json", produces="application/json")
     public ResponseEntity<String> auditTable(@RequestBody BoilerplateInstruction instruction) {

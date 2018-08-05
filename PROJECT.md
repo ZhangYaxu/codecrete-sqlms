@@ -1,9 +1,9 @@
 Project
 -------
-+ Generate every unique query procedure for each table name: 'selectTableByUnique'
++ Generate every unique query procedure for each table name: 'select${Table}By${Unique}'
 + Finish entity annotations
 + Replace all BoilerplateService individual instructions with BoilerplateInstruction
-
++ Add dto layer?
 
 Versions
 --------

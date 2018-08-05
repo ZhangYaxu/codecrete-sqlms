@@ -36,13 +36,11 @@ public class BoilerplateServiceTest {
     @Before
     public void setup() {}
     
-    // FIX: (AuthenticationCredentialsNotFoundException) Database out of sync
-    // TODO: Uncomment SpringBootTest and RunWith
     @Test
     public void testDeleteProcedure() throws Exception {
 
         String sql = this.boilerplateService.deleteProcedure("com.codecrete.domain.model.User");
-        System.out.format("SQL: %s\n", sql);
+        System.out.format("SQL: %s%n", sql);
         
         // FIX: Move to BoilerplateService
         Path tmp = Files.createTempDirectory("tmp");
