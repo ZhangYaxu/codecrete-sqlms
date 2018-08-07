@@ -24,8 +24,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * @author Eliot Morris
  */
-@RunWith(SpringRunner.class)
 @WebMvcTest(Application.class)
+@RunWith(SpringRunner.class)
 public class BoilerplateControllerTest {
     
     /**
@@ -47,6 +47,7 @@ public class BoilerplateControllerTest {
                 .build();
     }
     @Test public void test() { assertThat(true).isTrue(); }
+    
     @Test
     @WithMockUser(roles={"ADMIN", "MULE"}, username="tim.santaniello@codecrete.com", password="password")
     public void testSelectProcedure() throws Exception {

@@ -83,9 +83,22 @@ public class BoilerplateService {
         return new String();
     }
     
-    //
+    /**
+     * Generate the stored procedure for performing soft deletes of records
+     * used to perform all delete actions.
+     *
+     * @param table The table that the generated delete procedure will delete
+     *              records from when executed
+     * @return The sql string for generating the delete procedure on the specified
+     *         table
+     * @throws IOException If an error occurs while loading the freemarker template
+     * @throws TemplateException If something goes wrong during the population of
+     *                           the freemarker template with variables
+     * @throws ClassNotFoundException When the specified table name cannot be
+     *                                translated into a java Class
+     */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String deleteProcedure(String table) throws IOException, TemplateException, ClassNotFoundException {
+    public String deleteProcedure(String table) throws IOException, ClassNotFoundException, TemplateException {
         
         Configuration configuration = new Configuration(new Version("2.3.28"));
         configuration.setDefaultEncoding("UTF-8");
@@ -107,28 +120,39 @@ public class BoilerplateService {
      * @param klass The Class to reflect for column annotations
      * @return The list of each Column annotations name
      */
-    private List<ClassField> getClassFields(Class klass) {
+    private List<EntityField> getEntityFields(Class<?> klass) {
     
-        List<ClassField> fields = new ArrayList<>();
+        List<EntityField> fields = new ArrayList<>();
         
         for (Field field : ClassUtils.getFields(klass)) {
             field.setAccessible(true);
             
             // Specified column maps directly
+            // FIX: Only tracking one entity name field. prefer column.name and fallback to field.name
             if (field.isAnnotationPresent(Column.class)) {
                 
                 Column column = field.getAnnotation(Column.class);
-                fields.add(new ClassField(field.getName(), column.name(), field.getType().getSimpleName(), column.unique()));
+                
+                fields.add(new EntityField(
+                        column.name() == null ? field.getName() : column.name(),
+                        field.getType().getSimpleName(),
+                        column.unique())
+                );
             }
 
             // Nested object in column, requires recursion later
             else if (field.isAnnotationPresent(JoinColumn.class)) {
                 
                 JoinColumn column = field.getAnnotation(JoinColumn.class);
-                fields.add(new ClassField(field.getName(), column.name(), "INTEGER", column.unique()));
+                
+                fields.add(new EntityField(
+                        column.name() == null ? field.getName() : column.name(),
+                        "INTEGER",
+                        column.unique())
+                );
             }
             
-            // Ignore field without correct annotation
+            // Ignore field without a required annotation
             else {
                 LOG.trace("Field {} does not have a @Column annotation and is being ignored", field.getName());
             }
@@ -180,7 +204,7 @@ public class BoilerplateService {
     }
     
     // Retrieve the classes Table annotation name attribute value.
-    private String getTable(Class klass) {
+    private String getTable(Class<?> klass) {
     
         String name = null;
         
@@ -194,11 +218,54 @@ public class BoilerplateService {
     
     //
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String insertProcedure(String table) {
-        return new String();
+    public String insertProcedure(String table) throws IOException, ClassNotFoundException, TemplateException {
+    
+        Configuration configuration = new Configuration(new Version("2.3.28"));
+        configuration.setDefaultEncoding("UTF-8");
+        configuration.setClassForTemplateLoading(String.class, "/templates/procedures/");
+        Template template = configuration.getTemplate("Insert.ftl");
+    
+        Map<String,Object> variables = new HashMap<>();
+        variables.put("definer", getDefiner());
+        variables.put("host", getHost());
+    
+        Class<?> klass = Class.forName(table);
+        variables.put("table", getTable(klass));
+    
+        List<String> fields = new ArrayList<>();
+        Map<String,String> mode = new HashMap<>();
+        Map<String,Object> type = new HashMap<>();
+    
+        for (EntityField field : getEntityFields(klass)) {
+        
+            // Add field to fields list
+            fields.add(field.getName());
+        
+            // Populate mode map
+            mode.put(field.getName(), field.isUnique() ? "INOUT" : "OUT");
+        
+            // Populate type map
+            type.put(field.getName(), field.getSqlType());
+        }
+    
+        variables.put("fields", fields);
+        variables.put("mode", mode);
+        variables.put("type", type);
+        
+        return getSql(template, variables);
     }
     
-    //
+    /**
+     * Generate the stored procedure to select records from the specified table.
+     *
+     * @param table The table the procedure will be selecting from
+     * @return The sql string to create the stored procedure when executed
+     * @throws IOException If an error occurs while loading the freemarker template
+     * @throws ClassNotFoundException When the specified table name cannot be
+     *                                translated into a java Class
+     * @throws TemplateException If something goes wrong during the population of
+     *                           the freemarker template with variables
+     */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String selectProcedure(String table) throws IOException, ClassNotFoundException, TemplateException {
     
@@ -211,16 +278,16 @@ public class BoilerplateService {
         variables.put("definer", getDefiner());
         variables.put("host", getHost());
     
-        Class klass = Class.forName(table);
+        Class<?> klass = Class.forName(table);
         variables.put("table", getTable(klass));
         
         List<String> fields = new ArrayList<>();
         Map<String,String> mode = new HashMap<>();
         Map<String,Object> type = new HashMap<>();
         
-        for (ClassField field : getClassFields(klass)) {
+        for (EntityField field : getEntityFields(klass)) {
             
-            // Populate fields list
+            // Add field to fields list
             fields.add(field.getName());
             
             // Populate mode map
@@ -236,8 +303,8 @@ public class BoilerplateService {
     
         StringBuilder sql = new StringBuilder();
         
-        // Create sql for each unique field and concat together
-        for (ClassField field : getClassFields(klass)) {
+        // Create stored procedure sql for each unique field and concat together
+        for (EntityField field : getEntityFields(klass)) {
     
             if (field.isUnique()) {
                 
@@ -251,31 +318,64 @@ public class BoilerplateService {
         return sql.toString();
     }
     
+    // TODO: Rename!!
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String systemFunction() {
+    public String triggersEnabledFunction() {
         return new String();
     }
     
-    
     //
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public String updateProcedure(String table) {
-        return new String();
+    public String updateProcedure(String table) throws IOException, ClassNotFoundException, TemplateException {
+        
+        Configuration configuration = new Configuration(new Version("2.3.28"));
+        configuration.setDefaultEncoding("UTF-8");
+        configuration.setClassForTemplateLoading(String.class, "/templates/procedures/");
+        Template template = configuration.getTemplate("Update.ftl");
+    
+        Map<String,Object> variables = new HashMap<>();
+        variables.put("definer", getDefiner());
+        variables.put("host", getHost());
+    
+        Class<?> klass = Class.forName(table);
+        variables.put("table", getTable(klass));
+    
+        List<String> fields = new ArrayList<>();
+        Map<String,Object> type = new HashMap<>();
+        List<String> ignore = new ArrayList<>();
+        ignore.add("id");
+        ignore.add("created");
+        ignore.add("modified");
+        ignore.add("deleted");
+        
+        for (EntityField field : getEntityFields(klass)) {
+        
+            // Ignore id, created, modified and deleted fields since they
+            // should not be updated by user
+            if (ignore.contains(field.getName()) == false) {
+            
+                // Add field to fields list
+                fields.add(field.getName());
+            
+                // Populate type map
+                type.put(field.getName(), field.getSqlType());
+            }
+        }
+    
+        variables.put("fields", fields);
+        variables.put("type", type);
+        
+        return getSql(template, variables);
     }
     
     /**
      * Represents a class field with information used to translate from its
      * native java type to its corresponding mysql data type.
      */
-    private class ClassField {
-
-        /**
-         *
-         */
-        private final String column;
+    private class EntityField {
         
         /**
-         * The name of the
+         * FIX: Merge this with column? giving column name priority and defaulting to the fields actual name
          */
         private final String name;
     
@@ -297,23 +397,12 @@ public class BoilerplateService {
         /**
          *
          */
-        public ClassField(String name, String column, String javaType, boolean unique) {
-            
+        public EntityField(String name, String javaType, boolean unique) {
             
             this.name = name;
-            this.column = column;
             this.javaType = javaType;
             this.sqlType = MysqlUtils.toSqlType(javaType);
             this.unique = unique;
-        }
-    
-        /**
-         * Getter method for column variable.
-         *
-         * @return the column object
-         */
-        public String getColumn() {
-            return this.column;
         }
     
         /**

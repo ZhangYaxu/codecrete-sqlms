@@ -150,9 +150,9 @@ public class BuildService {
         // Patch database
         for (Path script : getPatchScripts(root)) {
         
-            String sql = toSql(script, domain);
-            report.addPatch(getPatchName(sql));
-            batch.add(sql);
+//            String sql = toSql(script, domain);
+//            report.addPatch(getPatchName(sql));
+//            batch.add(sql);
         }
         
         // Execute the concatenated script and return the number of statements executed.

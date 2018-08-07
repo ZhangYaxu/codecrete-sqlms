@@ -5,25 +5,24 @@ DROP PROCEDURE IF EXISTS update${table};
 
 DELIMITER $$
 
-CREATE DEFINER = '${user}'@'${host}' PROCEDURE update${table} (
+CREATE DEFINER = '${definer}'@'${host}' PROCEDURE update${table} (
 
-  # Define
-  [#list fields?keys as field]
-      ${mode[field]} field ${type[field]}${field?is_last?then("", ",")}
-  [/#list]
+  # Define input parameters
+  <#list fields as field>
+  IN ${field} ${type[field]}<#sep>, </#sep>
+  </#list>
 )
   SQL SECURITY DEFINER
   BEGIN
 
     UPDATE ${table}
     SET
+      <#list fields as field>
+      ${table}.${field} = ${field}<#sep>, </#sep>
+      </#list>
 
-      #
-      [#list fields?keys as field]
-        ${table}.${field} = ${fields[field]}${field?is_last?then("", ",")}
-      [/#list]
-
-    WHERE ${table}.id = id;
+    WHERE ${table}.deleted IS NULL
+    AND ${table}.id = id;
 
   END $$
 

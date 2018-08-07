@@ -28,10 +28,28 @@ public class BoilerplateController {
     @Autowired
     private BoilerplateService boilerplateService;
     
-    @RequestMapping(path="function/system", method=RequestMethod.POST, consumes="application/json", produces="application/json")
-    public ResponseEntity<String> systemFunction(@RequestBody BoilerplateInstruction instruction) {
+    @RequestMapping(path="audit", method=RequestMethod.POST, consumes="application/json", produces="application/json")
+    public ResponseEntity<String> audit(@RequestBody BoilerplateInstruction instruction) {
+    
+        String table = instruction.getTable();
+    
+        StringBuilder json = new StringBuilder();
+    
+        json.append(this.boilerplateService.auditTable(table));
+        json.append(System.lineSeparator());
+        json.append(this.boilerplateService.afterInsertTrigger(table));
+        json.append(System.lineSeparator());
+        json.append(this.boilerplateService.beforeDeleteTrigger(table));
+        json.append(System.lineSeparator());
+        json.append(this.boilerplateService.beforeUpdateTrigger(table));
         
-        String json = this.boilerplateService.systemFunction();
+        return new ResponseEntity<>(json.toString(), HttpStatus.OK);
+    }
+    
+    @RequestMapping(path="function/triggersEnabled", method=RequestMethod.POST, consumes="application/json", produces="application/json")
+    public ResponseEntity<String> triggersEnabledFunction(@RequestBody BoilerplateInstruction instruction) {
+        
+        String json = this.boilerplateService.triggersEnabledFunction();
     
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
