@@ -16,12 +16,16 @@
     </prerequisites>
 
     <properties>
-        <assertj.core.version>3.10.0</assertj.core.version>
+        <assertj.core.version>3.11.1</assertj.core.version>
+        <codecrete.domain.version>0.0.1</codecrete.domain.version>
+        <codecrete.utils.version>0.0.1</codecrete.utils.version>
         <freemarker.version>2.3.28</freemarker.version>
+        <hibernate.core.version>5.3.6.Final</hibernate.core.version>
         <jackson.annotations.version>2.9.6</jackson.annotations.version>
         <jackson.databind.version>2.9.6</jackson.databind.version>
         <java.version>1.8</java.version>
         <javax.persistence.api.version>2.2</javax.persistence.api.version>
+        <javax.servlet.api.version>4.0.1</javax.servlet.api.version>
         <junit.version>4.12</junit.version>
         <log4j.api.version>2.11.1</log4j.api.version>
         <log4j.core.version>2.11.1</log4j.core.version>
@@ -34,11 +38,25 @@
         <maven.resources.plugin.version>3.0.2</maven.resources.plugin.version>
         <maven.source.plugin.version>3.0.1</maven.source.plugin.version>
         <maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
+        <mockito.core.version>2.21.0</mockito.core.version>
         <mysql.connector.java.version>8.0.12</mysql.connector.java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <spring.boot.autoconfigure.version>1.5.9.RELEASE</spring.boot.autoconfigure.version>
+        <spring.boot.autoconfigure.version>2.0.4.RELEASE</spring.boot.autoconfigure.version>
+        <spring.boot.maven.plugin.version>2.0.4.RELEASE</spring.boot.maven.plugin.version>
+        <spring.boot.starter.actuator.version>2.0.4.RELEASE</spring.boot.starter.actuator.version>
+        <spring.boot.starter.tomcat.version>2.0.4.RELEASE</spring.boot.starter.tomcat.version>
+        <spring.boot.test.autoconfigure.version>2.0.4.RELEASE</spring.boot.test.autoconfigure.version>
+        <spring.boot.version>2.0.4.RELEASE</spring.boot.version>
+        <spring.data.commons.version>2.0.9.RELEASE</spring.data.commons.version>
+        <spring.data.jpa.version>2.0.9.RELEASE</spring.data.jpa.version>
+        <spring.security.config.version>5.0.7.RELEASE</spring.security.config.version>
+        <spring.security.core.version>5.0.7.RELEASE</spring.security.core.version>
+        <spring.security.test.version>5.0.7.RELEASE</spring.security.test.version>
+        <spring.security.web.version>5.0.7.RELEASE</spring.security.web.version>
         <spring.test.version>5.0.8.RELEASE</spring.test.version>
+        <spring.web.version>5.0.8.RELEASE</spring.web.version>
+        <spring.webmvc.version>5.0.8.RELEASE</spring.webmvc.version>
         <versions.maven.plugin.version>2.5</versions.maven.plugin.version>
     </properties>
 
@@ -180,13 +198,13 @@
         <dependency>
             <groupId>com.codecrete</groupId>
             <artifactId>codecrete-domain</artifactId>
-            <version>0.0.1</version>
+            <version>${codecrete.domain.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.codecrete</groupId>
             <artifactId>codecrete-utils</artifactId>
-            <version>0.0.1</version>
+            <version>${codecrete.utils.version}</version>
         </dependency>
 
         <!-- Do we still need jackson? for json functions? -->
@@ -211,7 +229,7 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>4.0.1</version>
+            <version>${javax.servlet.api.version}</version>
         </dependency>
 
         <dependency>
@@ -255,13 +273,13 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>5.3.3.Final</version>
+            <version>${hibernate.core.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>2.21.0</version>
+            <version>${mockito.core.version}</version>
         </dependency>
 
         <dependency>
@@ -273,85 +291,85 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>5.0.8.RELEASE</version>
+            <version>${spring.web.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>5.0.8.RELEASE</version>
+            <version>${spring.webmvc.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot</artifactId>
-            <version>2.0.4.RELEASE</version>
+            <version>${spring.boot.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
-            <version>2.0.4.RELEASE</version>
+            <version>${spring.boot.autoconfigure.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-maven-plugin</artifactId>
-            <version>2.0.4.RELEASE</version>
+            <version>${spring.boot.maven.plugin.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
-            <version>2.0.4.RELEASE</version>
+            <version>${spring.boot.starter.actuator.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
-            <version>2.0.4.RELEASE</version>
+            <version>${spring.boot.starter.tomcat.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-test-autoconfigure</artifactId>
-            <version>2.0.4.RELEASE</version>
+            <version>${spring.boot.test.autoconfigure.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-commons</artifactId>
-            <version>2.0.9.RELEASE</version>
+            <version>${spring.data.commons.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
-            <version>2.0.9.RELEASE</version>
+            <version>${spring.data.jpa.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
-            <version>5.0.7.RELEASE</version>
+            <version>${spring.security.core.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
-            <version>5.0.7.RELEASE</version>
+            <version>${spring.security.config.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
-            <version>5.0.7.RELEASE</version>
+            <version>${spring.security.test.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
-            <version>5.0.7.RELEASE</version>
+            <version>${spring.security.web.version}</version>
         </dependency>
     </dependencies>
 </project>

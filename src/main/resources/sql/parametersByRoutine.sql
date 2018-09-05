@@ -1,7 +1,7 @@
 SELECT
-  PARAMETER_NAME,
-  PARAMETER_MODE,
-  DATA_TYPE
-FROM information_schema.parameters
-WHERE SPECIFIC_SCHEMA = ?
-AND SPECIFIC_NAME = ?
+  parameter_name,
+  parameter_mode,
+  data_type
+FROM information_schema.Parameters
+WHERE specific_schema = ?
+AND specific_name = ?

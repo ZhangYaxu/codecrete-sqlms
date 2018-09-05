@@ -16,7 +16,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static com.codecrete.utils.FileUtils.getString;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -46,10 +45,9 @@ public class BoilerplateControllerTest {
                 .apply(springSecurity())
                 .build();
     }
-    @Test public void test() { assertThat(true).isTrue(); }
     
     @Test
-    @WithMockUser(roles={"ADMIN", "MULE"}, username="tim.santaniello@codecrete.com", password="password")
+    @WithMockUser(username="tim.santaniello@codecrete.com", password="password", roles={"ADMIN", "MULE"})
     public void testSelectProcedure() throws Exception {
         
         // Read BoilerplateInstruction from resource file

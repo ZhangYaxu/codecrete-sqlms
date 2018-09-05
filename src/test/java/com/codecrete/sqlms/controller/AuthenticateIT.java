@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -32,12 +33,12 @@ public class AuthenticateIT {
     @Autowired
     private WebApplicationContext context;
     
-    private MockMvc mockMvc;
+    private MockMvc mvc;
 
     @Before
     public void setup() {
         
-        mockMvc = MockMvcBuilders
+        mvc = MockMvcBuilders
                 .webAppContextSetup(this.context)
                 .apply(springSecurity())
                 .build();
@@ -46,10 +47,12 @@ public class AuthenticateIT {
     @Test
     public void testAuthenticate() throws Exception {
 
-        this.mockMvc.perform(formLogin("/login")
+        this.mvc.perform(formLogin("/login")
                 .user("tim.santaniello@codecrete.com")
                 .password("password"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(authenticated());
+        
+        assertThat(true).isTrue();
     }
 }

@@ -63,9 +63,11 @@ public class ServiceConfiguration {
         return this.definer;
     }
     
+    @Deprecated
     @Value("${build.directory.grants}")
     private Path grantDirectory;
     
+    @Deprecated
     @Bean
     public Path grantDirectory() {
         return this.grantDirectory;
@@ -79,17 +81,21 @@ public class ServiceConfiguration {
         return this.host;
     }
     
+    @Deprecated
     @Value("${build.directory.patches}")
     private Path patchDirectory;
     
+    @Deprecated
     @Bean
     public Path patchDirectory() {
         return this.patchDirectory;
     }
     
+    @Deprecated
     @Value("${build.directory.records}")
     private Path recordDirectory;
     
+    @Deprecated
     @Bean
     public Path recordDirectory() {
         return this.recordDirectory;
@@ -103,17 +109,21 @@ public class ServiceConfiguration {
         return this.rootDirectory;
     }
     
+    @Deprecated
     @Value("${build.directory.routines}")
     private Path routineDirectory;
     
+    @Deprecated
     @Bean
     public Path routineDirectory() {
         return this.routineDirectory;
     }
     
+    @Deprecated
     @Value("${build.directory.schemas}")
     private Path schemaDirectory;
     
+    @Deprecated
     @Bean
     public Path schemaDirectory() {
         return this.schemaDirectory;
@@ -135,17 +145,21 @@ public class ServiceConfiguration {
         return this.searchDepth;
     }
     
+    @Deprecated
     @Value("${build.directory.tables}")
     private Path tableDirectory;
     
+    @Deprecated
     @Bean
     public Path tableDirectory() {
         return this.tableDirectory;
     }
     
+    @Deprecated
     @Value("${build.directory.triggers}")
     private Path triggerDirectory;
     
+    @Deprecated
     @Bean
     public Path triggerDirectory() {
         return this.triggerDirectory;
@@ -157,9 +171,11 @@ public class ServiceConfiguration {
         return new AuthenticateService();
     }
     
+    @Deprecated
     @Value("${build.directory.users}")
     private Path userDirectory;
     
+    @Deprecated
     @Bean
     public Path userDirectory() {
         return this.userDirectory;
